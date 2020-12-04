@@ -1,0 +1,243 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Backend Application Moustaka
+  license:
+    name: Moustaka Katerina
+servers:
+  - url: http://localhost
+paths:
+  /books:
+    get:
+      summary: List all books
+      operationId: listBooks
+      tags:
+        - books
+      responses:
+        '200':
+          description: A paged array of books
+          headers:
+            x-next:
+              description: A ling to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Books"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a book
+      operationId: addBook
+      tags:
+        - books
+      responses:
+        '201':
+          description: Null response
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /books/{isbnNo}:
+    get:
+      summary: Info for a specific book
+      operationId: getBookByISBN
+      tags:
+        - books
+      parameters:
+        - name: isbnNo
+          in: path
+          required: true
+          description: The ISBN of the book to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /people:
+    get:
+      summary: List all people
+      operationId: listPeople
+      tags:
+        - people
+      responses:
+        '200':
+          description: A paged array of people
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/People"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a new entry in people table
+      operationId: addPeople
+      tags:
+        - people
+      responses:
+        '201':
+          description: Null response
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /people/{id}:
+    get:
+      summary: Info for a specific entry in people table
+      operationId: getPeopleById
+      tags:
+        - people
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the entry to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/People"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /lending:
+    get:
+      summary: List of the lending data
+      operationId: listRentals
+      tags:
+        - lending
+      responses:
+        '200':
+          description: An array of all the entries in table rentals
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rental"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a new entry in rentals table
+      operationId: addRental
+      tags:
+        - lending
+      responses:
+        '201':
+          description: Null response
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Book:
+      type: object
+      required:
+        - title
+        - author
+        - isbn
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        author:
+          type: string
+        isbn:
+          type: string
+    Books:
+      type: array
+      items:
+        $ref: "#/components/schemas/Book"
+    People:
+      type: object
+      required:
+        - id
+        - name
+        - lastname
+        - occupation
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        lastname:
+          type: string
+        occupation:
+          type: string
+    LibPeople:
+      type: array
+      items:
+        $ref: "#/components/schemas/People"
+    Rental:
+      type: object
+      required:
+        - bookId
+        - peopleId
+      properties:
+        bookId:
+          type: string
+        peopleId:
+          type: string
+    Rentals:
+      type: array
+      items:
+        $ref: "#/components/schemas/Rental"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
